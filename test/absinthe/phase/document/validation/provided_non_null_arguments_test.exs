@@ -167,6 +167,24 @@ defmodule Absinthe.Phase.Document.Validation.ProvidedNonNullArgumentsTest do
       )
     end
 
+    test "with an invalid non nulable value: Missing one non-nullable argument using a fragment" do
+      assert_fails_validation(
+        """
+        {
+          complicatedArgs {
+           ...nullableReq1
+          }
+        }
+
+        fragment nullableReq1 on ComplicatedArgs {
+          multipleReqs(req2: 100500)
+        }
+        """,
+        [],
+        bad_value(Blueprint.Input.Argument, @phase.error_message("req1", "Int!"), 3, name: "req1")
+      )
+    end
+
     test "with an invalid non-nullable value: Missing one non-nullable argument using a variable" do
       assert_fails_validation(
         """
